@@ -10,6 +10,17 @@ const ScheduleSummary = () => {
     a.startTime.localeCompare(b.startTime),
   );
 
+  const checkOverlap = () => {
+    return sortedSessions.some((session, index) => {
+      if (index < sortedSessions.length - 1) {
+        return session.endTime > sortedSessions[index + 1].startTime;
+      }
+      return false;
+    });
+  };
+
+  const hasOverlap = checkOverlap();
+
   const handleBack = () => {
     navigate("/add-sessions");
   };
@@ -30,9 +41,25 @@ const ScheduleSummary = () => {
       {sortedSessions.length === 0 && (
         <p>No sessions added. Please add sessions to continue.</p>
       )}
+      {hasOverlap && (
+        <div
+          className="relative rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700"
+          role="alert"
+        >
+          <strong className="font-bold">Warning!</strong>
+          <span className="block sm:inline">
+            {" "}
+            There are overlapping sessions in your schedule. Please review and
+            adjust the times.
+          </span>
+        </div>
+      )}
       <ul className="space-y-4">
         {sortedSessions.map((session, index) => (
-          <li key={index} className="space-y-2 rounded border p-4">
+          <li
+            key={index}
+            className={`space-y-2 rounded border p-4 ${hasOverlap ? "border-red-500" : ""}`}
+          >
             <div>
               <span className="font-bold">Session Name:</span>{" "}
               {session.sessionName}
